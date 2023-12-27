@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/app/components/Button";
 import SetColor from "@/app/components/products/SetColor";
 import SetQuantity from "@/app/components/products/SetQuantity";
 import { Rating } from "@mui/material";
@@ -102,7 +103,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           handelQuantityIncrease={handelQuantityIncrease}
         />
         <Horizontal />
-        <div>add to cart</div>
+        <div className="max-w-[300px]">
+          <Button outline onClick={() => {}} label="Add to cart" />
+        </div>
       </div>
     </div>
   );
