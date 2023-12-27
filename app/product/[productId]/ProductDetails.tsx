@@ -1,18 +1,73 @@
 "use client";
 
+import SetColor from "@/app/components/products/SetColor";
+import SetQuantity from "@/app/components/products/SetQuantity";
 import { Rating } from "@mui/material";
+import { useCallback, useState } from "react";
 
 interface ProductDetailsProps {
   product: any;
 }
+export type CartProductType = {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  brand: string;
+  selectedImg: SelectedImgType;
+  quantity: number;
+  prices: number;
+};
+export type SelectedImgType = {
+  color: string;
+  colorCode: string;
+  image: string;
+};
 const Horizontal = () => {
   return <hr className="w-[30%] my-2" />;
 };
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
+  const [cartProduct, setCartProduct] = useState<CartProductType>({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    category: product.category,
+    brand: product.brand,
+    selectedImg: { ...product.images[0] },
+    quantity: 1,
+    prices: product.price,
+  });
+
+  // console.log(cartProduct);
+
   const productRating =
     product.reviews.reduce((acc: number, item: any) => item.rating + acc, 0) /
     product.reviews.length;
+
+  const handleColorSelect = useCallback((value: SelectedImgType) => {
+    setCartProduct((prev) => {
+      return { ...prev, selectedImg: value };
+    });
+  }, []);
+
+  const handleQuantityDecrease = useCallback(() => {
+    setCartProduct((prev) => {
+      if (cartProduct.quantity === 1) {
+        return prev;
+      }
+      return { ...prev, quantity: prev.quantity - 1 };
+    });
+  }, [cartProduct]);
+  const handelQuantityIncrease = useCallback(() => {
+    setCartProduct((prev) => {
+      if (cartProduct.quantity === 99) {
+        return prev;
+      }
+      return { ...prev, quantity: prev.quantity + 1 };
+    });
+  }, [cartProduct]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
       <div>Images</div>
@@ -35,9 +90,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           {product.inStock ? "In stock" : "Out of stock"}
         </div>
         <Horizontal />
-        <div>Color</div>
+        <SetColor
+          cartProduct={cartProduct}
+          images={product.images}
+          handelColorSelect={handleColorSelect}
+        />
         <Horizontal />
-        <div>Quantity</div>
+        <SetQuantity
+          cartProduct={cartProduct}
+          handelQuantityDecrease={handleQuantityDecrease}
+          handelQuantityIncrease={handelQuantityIncrease}
+        />
         <Horizontal />
         <div>add to cart</div>
       </div>
