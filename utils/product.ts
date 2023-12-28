@@ -32,13 +32,13 @@ export const product = {
       id: "6499b4887402b0efd394d8f3",
       userId: "6499b184b0e9a8c8709821d3",
       productId: "648437b38c44d52b9542e340",
-      rating: 4,
+      rating: 2,
       comment:
         "good enough. I like the camera and casing. the delivery was fast too.",
       createdDate: "2023-06-26T15:53:44.483Z",
       user: {
         id: "6499b184b0e9a8c8709821d3",
-        name: "Chaoo",
+        name: "Chaoo charles",
         email: "example1@gmail.com",
         emailVerified: null,
         image:
@@ -58,7 +58,7 @@ export const product = {
       createdDate: "2023-06-26T14:30:40.998Z",
       user: {
         id: "6475af156bad4917456e6e1e",
-        name: "Charles",
+        name: "Charles daoe",
         email: "example@gmail.com",
         emailVerified: null,
         image:
