@@ -1,0 +1,12 @@
+{
+  "commands": {
+    "name": {
+      "prompt": "can you fine way it render three time?",
+      "context": {
+        "codebase": true,
+        "selection": true
+      },
+      "description": "way this component render three times "
+    }
+  }
+}

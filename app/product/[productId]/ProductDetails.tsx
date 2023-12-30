@@ -58,7 +58,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         setIsProductInCart(true);
       }
     }
-  }, [cartProducts]);
+  }, [cartProducts, product.id]);
 
   const productRating =
     product.reviews.reduce((acc: number, item: any) => item.rating + acc, 0) /
@@ -78,6 +78,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
       return { ...prev, quantity: prev.quantity - 1 };
     });
   }, [cartProduct]);
+
   const handelQuantityIncrease = useCallback(() => {
     setCartProduct((prev) => {
       if (cartProduct.quantity === 99) {
@@ -145,7 +146,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
             <Horizontal />
             <div className="max-w-[300px]">
               <Button
-                onClick={() => handelAddProductToCard(cartProduct)}
+                onClick={() => {
+                  handelAddProductToCard(cartProduct);
+                }}
                 label="Add to cart"
               />
             </div>
