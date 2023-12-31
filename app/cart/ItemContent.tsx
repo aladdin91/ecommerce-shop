@@ -11,7 +11,11 @@ interface ItemContentType {
   item: CartProductType;
 }
 const ItemContent: React.FC<ItemContentType> = ({ item }) => {
-  const { removeItemFromCart } = useCart();
+  const {
+    handleRemoveItemFromCart,
+    handleCartQuantityIncrease,
+    handleCartQuantityDecrease,
+  } = useCart();
   return (
     <div className="grid grid-cols-5 text-xs md:text-sm gap-4 border-t-[1.5px] border-slate-200 py-4 items-center">
       <div className="col-span-2 justify-self-start flex gap-2 md:gap-4">
@@ -31,7 +35,7 @@ const ItemContent: React.FC<ItemContentType> = ({ item }) => {
           <div className="w-[70px]">
             <button
               className="text-slate-500 underline"
-              onClick={() => removeItemFromCart(item)}
+              onClick={() => handleRemoveItemFromCart(item)}
             >
               Remove
             </button>
@@ -43,8 +47,8 @@ const ItemContent: React.FC<ItemContentType> = ({ item }) => {
         <SetQuantity
           cartCounter={true}
           cartProduct={item}
-          handelQuantityDecrease={() => {}}
-          handelQuantityIncrease={() => {}}
+          handelQuantityDecrease={() => handleCartQuantityDecrease(item)}
+          handelQuantityIncrease={() => handleCartQuantityIncrease(item)}
         />
       </div>
       <div className=" justify-self-end font-semibold">
