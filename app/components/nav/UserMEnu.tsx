@@ -7,8 +7,13 @@ import Link from "next/link";
 import MenuItem from "./MenuItem";
 import { signOut } from "next-auth/react";
 import BackDrop from "./BackDrop";
+import { SafeUser } from "@/types";
 
-const UserMEnu = () => {
+interface UserMenuProps {
+  currentUser: SafeUser | null | undefined;
+}
+
+const UserMEnu: React.FC<UserMenuProps> = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = useCallback(() => {
@@ -27,30 +32,34 @@ const UserMEnu = () => {
         </div>
         {isOpen && (
           <div className=" absolute rounded-md shadow-sm w-[170px] bg-white overflow-hidden right-0 top-12 text-sm flex flex-col cursor-pointer">
-            <div>
-              <Link href="/orders">
-                <MenuItem onClick={toggleOpen}>Your orders</MenuItem>
-              </Link>
-              <Link href="/admin">
-                <MenuItem onClick={toggleOpen}>Admin dashboard</MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    toggleOpen();
-                    signOut();
-                  }}
-                >
-                  Logout
-                </MenuItem>
-              </Link>
-            </div>
-            <div>
-              <Link href="/login">
-                <MenuItem onClick={toggleOpen}>Login</MenuItem>
-              </Link>
-              <Link href="/register">
-                <MenuItem onClick={toggleOpen}>Register</MenuItem>
-              </Link>
-            </div>
+            {currentUser ? (
+              <div>
+                <Link href="/orders">
+                  <MenuItem onClick={toggleOpen}>Your orders</MenuItem>
+                </Link>
+                <Link href="/admin">
+                  <MenuItem onClick={toggleOpen}>Admin dashboard</MenuItem>
+                  <hr />
+                  <MenuItem
+                    onClick={() => {
+                      toggleOpen();
+                      signOut();
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                </Link>
+              </div>
+            ) : (
+              <div>
+                <Link href="/login">
+                  <MenuItem onClick={toggleOpen}>Login</MenuItem>
+                </Link>
+                <Link href="/register">
+                  <MenuItem onClick={toggleOpen}>Register</MenuItem>
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>
