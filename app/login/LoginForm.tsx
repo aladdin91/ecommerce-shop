@@ -29,7 +29,7 @@ const LoginForm: React.FC<LoginFormType> = ({ currentUser }) => {
 
   useEffect(() => {
     if (currentUser) {
-      router.push("/");
+      router.push("/cart");
       router.refresh();
     }
   }, []);
@@ -44,7 +44,7 @@ const LoginForm: React.FC<LoginFormType> = ({ currentUser }) => {
       if (callback?.ok) {
         router.push("/cart");
         router.refresh();
-        toast.success("Logged in in successfully");
+        toast.success("Logged in successfully");
       }
       if (callback?.error) {
         toast.error(callback.error);
