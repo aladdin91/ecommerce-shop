@@ -1,16 +1,24 @@
 "use client";
 
+import Button from "@/app/components/Button";
 import Heading from "@/app/components/Heading";
 import CategoryInput from "@/app/components/inputs/CategoryInput";
 import CustomCheckbox from "@/app/components/inputs/CustomCheckbox";
 import Input from "@/app/components/inputs/Input";
 import SelectColor from "@/app/components/inputs/SelectColor";
 import TextArea from "@/app/components/inputs/TextArea";
+import firebaseApp from "@/libs/firebase";
 import { categories } from "@/utils/category";
 import { colors } from "@/utils/colors";
 import { useCallback, useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
-
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 export type ImageType = {
   color: string;
   colorCode: string;
@@ -26,8 +34,6 @@ const AddProductForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<ImageType[] | null>(null);
   const [isProductCreated, setIsProductCreated] = useState(false);
-
-  console.log("images", images);
 
   const {
     register,
@@ -62,6 +68,80 @@ const AddProductForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProductCreated]);
 
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    console.log("product Data", data);
+    setIsLoading(true);
+    let uploadedImages: UploadedImageType[] = [];
+
+    if (!data.category) {
+      setIsLoading(false);
+      return toast.error("Category is not selected");
+    }
+    if (!data.images || data.images.length === 0) {
+      setIsLoading(false);
+      return toast.error("No selected images");
+    }
+    const handleImageUpload = async () => {
+      toast("Creating product, please wait...");
+      try {
+        for (const item of data.images) {
+          if (item.image) {
+            const fileName = new Date().getTime() + "-" + item.image.name;
+            const storage = getStorage(firebaseApp);
+            const storageRef = ref(storage, `products/${fileName}`);
+            const uploadTask = uploadBytesResumable(storageRef, item.image);
+            await new Promise<void>((resolve, reject) => {
+              uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                  const progress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                  console.log("Upload is " + progress + "% done ");
+                  switch (snapshot.state) {
+                    case "paused":
+                      console.log("Upload is paused");
+                      break;
+                    case "running":
+                      console.log("Upload is running");
+                      break;
+                  }
+                },
+                (error) => {
+                  console.log("error uploading image: ", error);
+
+                  reject(error);
+                },
+                () => {
+                  getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => {
+                      uploadedImages.push({
+                        ...item,
+                        image: downloadURL,
+                      });
+                      console.log("file available at: ", downloadURL);
+                      resolve();
+                    })
+                    .catch((error) => {
+                      console.log("error: ", error);
+
+                      reject(error);
+                    });
+                }
+              );
+            });
+          }
+        }
+      } catch (error) {
+        setIsLoading(false);
+        console.log("Error image upload", error);
+        return toast.error("Error image upload");
+      }
+    };
+
+    await handleImageUpload();
+    const productData = { ...data, images: uploadedImages };
+    console.log("productData", productData);
+  };
   const category = watch("category");
 
   const setCustomValue = (id: string, value: any) => {
@@ -176,6 +256,10 @@ const AddProductForm = () => {
           })}
         </div>
       </div>
+      <Button
+        label={isLoading ? "Loading..." : "Add product"}
+        onClick={handleSubmit(onSubmit)}
+      />
     </>
   );
 };
