@@ -4,12 +4,26 @@ import { Product } from "@prisma/client";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { formatPrice } from "@/utils/formatPrice";
 import Heading from "@/app/components/Heading";
+import Status from "@/app/components/Status";
+import {
+  MdCached,
+  MdClose,
+  MdDelete,
+  MdDone,
+  MdRemoveRedEye,
+} from "react-icons/md";
+import ActionBtn from "@/app/components/ActionBtn";
+import { useCallback } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 interface MangeProductsClientProps {
   products: Product[];
 }
 const MangeProductsClient: React.FC<MangeProductsClientProps> = ({
   products,
 }) => {
+  const router = useRouter();
   let rows: any = [];
 
   if (products) {
@@ -49,7 +63,21 @@ const MangeProductsClient: React.FC<MangeProductsClientProps> = ({
         return (
           <div>
             {" "}
-            {params.row.inStock === true ? "In stock" : "Out of stock"}{" "}
+            {params.row.inStock === true ? (
+              <Status
+                text="In stock"
+                icon={MdDone}
+                bg="bg-teal-200"
+                color="text-teal-700"
+              />
+            ) : (
+              <Status
+                text="Out of stock"
+                icon={MdClose}
+                bg="bg-rose-200"
+                color="text-rose-700"
+              />
+            )}{" "}
           </div>
         );
       },
@@ -59,10 +87,38 @@ const MangeProductsClient: React.FC<MangeProductsClientProps> = ({
       headerName: "Actions",
       width: 200,
       renderCell: (params) => {
-        return <div> Action </div>;
+        return (
+          <div className="flex justify-between gap-4 w-full">
+            <ActionBtn
+              icon={MdCached}
+              onClick={() => {
+                handleToggleStock(params.row.id, params.row.inStock);
+              }}
+            />
+            <ActionBtn icon={MdDelete} onClick={() => {}} />
+            <ActionBtn icon={MdRemoveRedEye} onClick={() => {}} />
+          </div>
+        );
       },
     },
   ];
+
+  const handleToggleStock = useCallback((id: string, inStock: boolean) => {
+    axios
+      .put("/api/product", {
+        id,
+        inStock: !inStock,
+      })
+      .then((res) => {
+        toast.success("Product status changed");
+        router.refresh();
+      })
+      .catch((error) => {
+        toast.error("Something went wrong");
+        console.log(error);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="max-w-[1150px] m-auto tex-xl">
@@ -80,6 +136,7 @@ const MangeProductsClient: React.FC<MangeProductsClientProps> = ({
           }}
           pageSizeOptions={[5, 10]}
           checkboxSelection
+          disableRowSelectionOnClick
         />
       </div>
     </div>
