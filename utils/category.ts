@@ -1,5 +1,6 @@
 import { AiFillPhone, AiOutlineDesktop, AiOutlineLaptop } from "react-icons/ai";
 import { MdOutlineKeyboard, MdStorefront, MdTv, MdWatch } from "react-icons/md";
+import { TbDeviceIpad } from "react-icons/tb";
 
 export const categories = [
   {
@@ -25,6 +26,10 @@ export const categories = [
   {
     label: "Tv",
     icon: MdTv,
+  },
+  {
+    label: "Ipad",
+    icon: TbDeviceIpad,
   },
   {
     label: "Accessories",
