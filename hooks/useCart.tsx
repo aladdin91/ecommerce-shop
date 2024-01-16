@@ -17,8 +17,6 @@ type CartContextType = {
   handleCartQuantityIncrease: (product: CartProductType) => void;
   handleCartQuantityDecrease: (product: CartProductType) => void;
   handleClearCart: () => void;
-  paymentIntent: string | null;
-  handleSetPaymentIntent: (val: string | null) => void;
 };
 
 export const CartContext = createContext<CartContextType | null>(null);
@@ -33,18 +31,11 @@ export const CartContextProvider = (props: Props) => {
     null
   );
   const [cartTotalAmount, setCartTotalAmount] = useState(0);
-  const [paymentIntent, setPaymentIntent] = useState<string | null>(null);
 
   useEffect(() => {
     const cartItems: any = localStorage.getItem("cartItems");
     const cProducts: CartProductType[] | null = JSON.parse(cartItems);
-    const eShopPaymentIntent: any = localStorage.getItem("eShopPaymentIntent");
-    const paymentIntent =
-      eShopPaymentIntent && eShopPaymentIntent !== "undefined"
-        ? JSON.parse(eShopPaymentIntent)
-        : null;
     setCartProducts(cProducts);
-    setPaymentIntent(paymentIntent);
   }, []);
 
   useEffect(() => {
@@ -80,12 +71,16 @@ export const CartContextProvider = (props: Props) => {
       }
       toast.success("Cart added successfully");
       localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+      console.log("handelAddProductToCart run");
+
       return updatedCart;
     });
   }, []);
 
   const handleRemoveItemFromCart = useCallback(
     (product: CartProductType) => {
+      console.log("handleRemoveItemFromCart run");
+
       if (cartProducts) {
         const filteredProducts = cartProducts.filter((item) => {
           return item.id !== product.id;
@@ -100,6 +95,8 @@ export const CartContextProvider = (props: Props) => {
 
   const handleCartQuantityIncrease = useCallback(
     (product: CartProductType) => {
+      console.log("handleCartQuantityIncrease run");
+
       let updatedCart;
 
       if (product.quantity === 99) {
@@ -123,6 +120,8 @@ export const CartContextProvider = (props: Props) => {
 
   const handleCartQuantityDecrease = useCallback(
     (product: CartProductType) => {
+      console.log("handleCartQuantityDecrease run");
+
       let updatedCart;
 
       if (product.quantity === 1) {
@@ -148,11 +147,7 @@ export const CartContextProvider = (props: Props) => {
     setCartProducts(null);
     setCartTotalQuantity(0);
     localStorage.setItem("cartItems", JSON.stringify(null));
-  }, []);
-
-  const handleSetPaymentIntent = useCallback((val: string | null) => {
-    setPaymentIntent(val);
-    localStorage.setItem("eShopPaymentIntent", JSON.stringify(val));
+    toast.success("Cart cleared successfully");
   }, []);
 
   const value = {
@@ -164,8 +159,6 @@ export const CartContextProvider = (props: Props) => {
     handleCartQuantityDecrease,
     handleClearCart,
     cartTotalAmount,
-    paymentIntent,
-    handleSetPaymentIntent,
   };
   return <CartContext.Provider value={value} {...props} />;
 };
