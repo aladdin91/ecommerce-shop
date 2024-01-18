@@ -73,10 +73,12 @@ model Order{
   amount         Float
   currency       String
   status         String
-  deliveryStatus String?
+  deliveryStatus String
   createDate     DateTime @default(now())
   products       CartProductType[]
-  address          Address?
+  city           String
+  postalCode     String
+  streetAddress  String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
 }
@@ -97,14 +99,6 @@ type Image{
   image       String
 }
 
-type Address{
-city        String 
-country     String
-line1       String
-line2       String?
-postal_code String
-state       String
-}
 
 enum Role{
   USER
